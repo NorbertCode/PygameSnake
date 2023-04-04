@@ -1,14 +1,19 @@
 import pygame
+import random
 
 CELL_SIZE = 50
+AREA_WIDTH = 15
+AREA_HEIGHT = 15
 
 pygame.init()
-window = pygame.display.set_mode((CELL_SIZE * 15, CELL_SIZE * 15))
+window = pygame.display.set_mode((CELL_SIZE * AREA_WIDTH, CELL_SIZE * AREA_HEIGHT))
 
 direction = (1, 0)
 snake = [pygame.Rect((2 * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
          pygame.Rect((CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
          pygame.Rect((0, 0, CELL_SIZE, CELL_SIZE))]
+
+point = pygame.Rect((random.randint(0, AREA_WIDTH - 1) * CELL_SIZE, random.randint(0, AREA_HEIGHT - 1) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
 clock = pygame.time.Clock()
 timePerTick = 500 # milliseconds, so 0.5 second
@@ -39,9 +44,18 @@ while run:
                 direction = toBeDirection
 
     if timeSinceTick >= timePerTick:
+        collectedPoint = False
+        if snake[0].colliderect(point):
+            snake.insert(1, pygame.Rect((snake[1].x, snake[1].y, CELL_SIZE, CELL_SIZE))) #? just insert a copy of snake[1]? 
+            point = pygame.Rect((random.randint(0, AREA_WIDTH) * CELL_SIZE, random.randint(0, AREA_HEIGHT) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+            collectedPoint = True
+
         for i in reversed(range(1, len(snake))):
-            snake[i].x = snake[i - 1].x
-            snake[i].y = snake[i - 1].y
+            #! change this
+            # currently it just doesn't move cells beside the heading two
+            if not collectedPoint or i < len(snake) - 2:
+                snake[i].x = snake[i - 1].x
+                snake[i].y = snake[i - 1].y
 
         snake[0].move_ip(direction[0] * CELL_SIZE, direction[1] * CELL_SIZE)
 
@@ -50,6 +64,7 @@ while run:
     timeSinceTick += clock.tick()
 
     # --- Drawing ---
+    pygame.draw.rect(window, (255, 0, 0), point)
     for cell in snake:
         pygame.draw.rect(window, (0, 255, 0), cell)
 
