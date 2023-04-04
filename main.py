@@ -19,6 +19,16 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        elif event.type == pygame.KEYDOWN:
+            pressed = pygame.key.get_pressed()
+            if pressed[pygame.K_UP] and direction != (0, 1):
+                direction = (0, -1)
+            elif pressed[pygame.K_DOWN] and direction != (0, -1):
+                direction = (0, 1)
+            elif pressed[pygame.K_LEFT] and direction != (1, 0):
+                direction = (-1, 0)
+            elif pressed[pygame.K_RIGHT] and direction != (-1, 0):
+                direction = (1, 0)
 
     if timeSinceTick >= timePerTick:
         for cell in snake:
@@ -26,7 +36,6 @@ while run:
         timeSinceTick = 0
 
     timeSinceTick += clock.tick()
-    print(timeSinceTick)
 
     # --- Drawing ---
     for cell in snake:
