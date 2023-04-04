@@ -6,7 +6,9 @@ pygame.init()
 window = pygame.display.set_mode((CELL_SIZE * 15, CELL_SIZE * 15))
 
 direction = (1, 0)
-snake = [pygame.Rect((0, 0, CELL_SIZE, CELL_SIZE))]
+snake = [pygame.Rect((2 * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
+         pygame.Rect((CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
+         pygame.Rect((0, 0, CELL_SIZE, CELL_SIZE))]
 
 clock = pygame.time.Clock()
 timePerTick = 500 # milliseconds, so 0.5 second
@@ -31,8 +33,12 @@ while run:
                 direction = (1, 0)
 
     if timeSinceTick >= timePerTick:
-        for cell in snake:
-            cell.move_ip(direction[0] * CELL_SIZE, direction[1] * CELL_SIZE)
+        for i in reversed(range(1, len(snake))):
+            snake[i].x = snake[i - 1].x
+            snake[i].y = snake[i - 1].y
+
+        snake[0].move_ip(direction[0] * CELL_SIZE, direction[1] * CELL_SIZE)
+
         timeSinceTick = 0
 
     timeSinceTick += clock.tick()
