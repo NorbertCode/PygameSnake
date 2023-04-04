@@ -23,14 +23,20 @@ while run:
             run = False
         elif event.type == pygame.KEYDOWN:
             pressed = pygame.key.get_pressed()
-            if pressed[pygame.K_UP] and direction != (0, 1):
-                direction = (0, -1)
-            elif pressed[pygame.K_DOWN] and direction != (0, -1):
-                direction = (0, 1)
-            elif pressed[pygame.K_LEFT] and direction != (1, 0):
-                direction = (-1, 0)
-            elif pressed[pygame.K_RIGHT] and direction != (-1, 0):
-                direction = (1, 0)
+            toBeDirection = direction # so if the player presses something other than arrow buttons the snake doesn't just stop
+            if pressed[pygame.K_UP]:
+                toBeDirection = (0, -1)
+            elif pressed[pygame.K_DOWN]:
+                toBeDirection = (0, 1)
+            elif pressed[pygame.K_LEFT]:
+                toBeDirection = (-1, 0)
+            elif pressed[pygame.K_RIGHT]:
+                toBeDirection = (1, 0)
+
+            # check if going that direction means going backwards
+            toBePosition = (snake[0].x + (toBeDirection[0] * CELL_SIZE), snake[0].y + (toBeDirection[1] * CELL_SIZE))
+            if toBePosition != (snake[1].x, snake[1].y): # only care about snake[1], because it's the only cell the player physically can't hit
+                direction = toBeDirection
 
     if timeSinceTick >= timePerTick:
         for i in reversed(range(1, len(snake))):
