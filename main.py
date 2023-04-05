@@ -19,12 +19,21 @@ clock = pygame.time.Clock()
 timePerTick = 500 # milliseconds, so 0.5 second
 timeSinceTick = 0
 
-pause = False
+gameOver = False
+
+def IsInsideSnake(rect, snake):
+    isInsideSnake = False
+    for cell in snake:
+        if rect.colliderect(cell):
+            isInsideSnake = True
+            break
+    return isInsideSnake
 
 run = True
 while run:
     window.fill((0, 0, 0))
 
+    # --- Events ---
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -47,20 +56,16 @@ while run:
             if toBePosition != (snake[1].x, snake[1].y): # only care about snake[1], because it's the only cell the player physically can't hit
                 direction = toBeDirection
 
-    if timeSinceTick >= timePerTick:
+    # --- Ticks ---
+    if timeSinceTick >= timePerTick and not gameOver:
         collectedPoint = False
         if snake[0].colliderect(point):
-            snake.insert(1, pygame.Rect((snake[1].x, snake[1].y, CELL_SIZE, CELL_SIZE))) #? just insert a copy of snake[1]? 
+            snake.insert(1, snake[1].copy())
 
             # keep randomizing point's position until it's not spawned inside the snake
             while True:
                 point = pygame.Rect((random.randint(0, AREA_WIDTH) * CELL_SIZE, random.randint(0, AREA_HEIGHT) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
-                isInsideSnake = False
-                for cell in snake:
-                    if point.colliderect(cell):
-                        isInsideSnake = True
-                        break
-                if not isInsideSnake:
+                if not IsInsideSnake(point, snake):
                     break
 
             collectedPoint = True
@@ -73,10 +78,16 @@ while run:
 
         snake[0].move_ip(direction[0] * CELL_SIZE, direction[1] * CELL_SIZE)
 
+        outOfBounds = snake[0].x < 0 or snake[0].x > (AREA_WIDTH - 1) * CELL_SIZE or snake[0].y < 0 or snake[0].y > (AREA_HEIGHT - 1) * CELL_SIZE
+        if outOfBounds or IsInsideSnake(snake[0], snake[1:]): # here you have to use snake[1:], because snake[0] obviously collides with itself
+            for i in range(len(snake) - 1):
+                snake[i] = pygame.Rect((snake[i + 1].x, snake[i + 1].y, CELL_SIZE, CELL_SIZE))
+            snake[-1].move_ip(-direction[0] * CELL_SIZE, -direction[1] * CELL_SIZE)
+            gameOver = True
+
         timeSinceTick = 0
 
-    if not pause:
-        timeSinceTick += clock.tick()
+    timeSinceTick += clock.tick()
 
     # --- Drawing ---
     pygame.draw.rect(window, (255, 0, 0), point)
