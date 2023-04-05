@@ -19,6 +19,8 @@ clock = pygame.time.Clock()
 timePerTick = 500 # milliseconds, so 0.5 second
 timeSinceTick = 0
 
+pause = False
+
 run = True
 while run:
     window.fill((0, 0, 0))
@@ -37,6 +39,8 @@ while run:
                 toBeDirection = (-1, 0)
             elif pressed[pygame.K_RIGHT]:
                 toBeDirection = (1, 0)
+            elif pressed[pygame.K_SPACE]:
+                pause = not pause
 
             # check if going that direction means going backwards
             toBePosition = (snake[0].x + (toBeDirection[0] * CELL_SIZE), snake[0].y + (toBeDirection[1] * CELL_SIZE))
@@ -51,17 +55,20 @@ while run:
             collectedPoint = True
 
         for i in reversed(range(1, len(snake))):
-            #! change this
-            # currently it just doesn't move cells beside the heading two
-            if not collectedPoint or i < len(snake) - 2:
+            # if a point was collected just move the head and the newly inserted cell
+            if not collectedPoint or i <= 1:
                 snake[i].x = snake[i - 1].x
                 snake[i].y = snake[i - 1].y
 
         snake[0].move_ip(direction[0] * CELL_SIZE, direction[1] * CELL_SIZE)
 
+        cellPositions = [(cell.x / CELL_SIZE, cell.y / CELL_SIZE) for cell in snake]
+        print(cellPositions)
+
         timeSinceTick = 0
 
-    timeSinceTick += clock.tick()
+    if not pause:
+        timeSinceTick += clock.tick()
 
     # --- Drawing ---
     pygame.draw.rect(window, (255, 0, 0), point)
