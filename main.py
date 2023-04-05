@@ -51,7 +51,18 @@ while run:
         collectedPoint = False
         if snake[0].colliderect(point):
             snake.insert(1, pygame.Rect((snake[1].x, snake[1].y, CELL_SIZE, CELL_SIZE))) #? just insert a copy of snake[1]? 
-            point = pygame.Rect((random.randint(0, AREA_WIDTH) * CELL_SIZE, random.randint(0, AREA_HEIGHT) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+
+            # keep randomizing point's position until it's not spawned inside the snake
+            while True:
+                point = pygame.Rect((random.randint(0, AREA_WIDTH) * CELL_SIZE, random.randint(0, AREA_HEIGHT) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                isInsideSnake = False
+                for cell in snake:
+                    if point.colliderect(cell):
+                        isInsideSnake = True
+                        break
+                if not isInsideSnake:
+                    break
+
             collectedPoint = True
 
         for i in reversed(range(1, len(snake))):
@@ -61,9 +72,6 @@ while run:
                 snake[i].y = snake[i - 1].y
 
         snake[0].move_ip(direction[0] * CELL_SIZE, direction[1] * CELL_SIZE)
-
-        cellPositions = [(cell.x / CELL_SIZE, cell.y / CELL_SIZE) for cell in snake]
-        print(cellPositions)
 
         timeSinceTick = 0
 
