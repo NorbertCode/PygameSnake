@@ -1,8 +1,8 @@
 import pygame
 import random
 
-def RandomizePosition(areaWidth, areaHeight, cellSize):
-    return pygame.Rect((random.randint(0, areaWidth - 1) * cellSize, random.randint(0, areaHeight - 1) * cellSize, cellSize, cellSize))
+def RandomizePosition():
+    return pygame.Rect((random.randint(0, AREA_WIDTH - 1) * CELL_SIZE, random.randint(0, AREA_HEIGHT - 1) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
 def IsInsideSnake(rect, snake):
     isInsideSnake = False
@@ -12,19 +12,30 @@ def IsInsideSnake(rect, snake):
             break
     return isInsideSnake
 
+def ResetSnake():
+    snake = [pygame.Rect((4 * CELL_SIZE, 6 * CELL_SIZE, CELL_SIZE, CELL_SIZE)),
+         pygame.Rect((3 * CELL_SIZE, 6 * CELL_SIZE, CELL_SIZE, CELL_SIZE)),
+         pygame.Rect((2 * CELL_SIZE, 6 * CELL_SIZE, CELL_SIZE, CELL_SIZE))]
+    return snake
+
+def DrawText(text, fontSize, x, y, color = (255, 255, 255)):
+    font = pygame.font.SysFont('Arial', fontSize)
+    textSurface = font.render(text, True, color)
+    window.blit(textSurface, (x, y))
+
 CELL_SIZE = 50
 AREA_WIDTH = 15
 AREA_HEIGHT = 15
 
 pygame.init()
 window = pygame.display.set_mode((CELL_SIZE * AREA_WIDTH, CELL_SIZE * AREA_HEIGHT))
+pygame.display.set_caption('Snake')
 
 direction = (1, 0)
-snake = [pygame.Rect((2 * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
-         pygame.Rect((CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
-         pygame.Rect((0, 0, CELL_SIZE, CELL_SIZE))]
+snake = ResetSnake()
 
-point = RandomizePosition(AREA_WIDTH, AREA_HEIGHT, CELL_SIZE)
+point = RandomizePosition()
+pointsCollected = 0
 
 clock = pygame.time.Clock()
 timePerTick = 300 # milliseconds
@@ -51,6 +62,16 @@ while run:
                 toBeDirection = (-1, 0)
             elif pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
                 toBeDirection = (1, 0)
+            elif pressed[pygame.K_SPACE] and gameOver:
+                gameOver = False
+                direction = (1, 0)
+                snake = ResetSnake()
+                point = RandomizePosition()
+                pointsCollected = 0
+                timeSinceTick = 0
+                pass
+            elif pressed[pygame.K_ESCAPE] and gameOver:
+                run = False
 
             # check if going that direction means going backwards
             toBePosition = (snake[0].x + (toBeDirection[0] * CELL_SIZE), snake[0].y + (toBeDirection[1] * CELL_SIZE))
@@ -65,11 +86,12 @@ while run:
 
             # keep randomizing point's position until it's not spawned inside the snake
             while True:
-                point = RandomizePosition(AREA_WIDTH, AREA_HEIGHT, CELL_SIZE)
+                point = RandomizePosition()
                 print(point, IsInsideSnake(point, snake))
                 if not IsInsideSnake(point, snake):
                     break
 
+            pointsCollected += 1
             collectedPoint = True
 
         for i in reversed(range(1, len(snake))):
@@ -89,7 +111,13 @@ while run:
 
         timeSinceTick = 0
 
-    timeSinceTick += clock.tick()
+    elif not gameOver:
+        timeSinceTick += clock.tick()
+
+    else:
+        DrawText('You collected ' + str(pointsCollected) + ' points.', 30, 15, 15)
+        DrawText('Press space to restart', 30, 15, 65)
+        DrawText('Press esc to quit', 30, 15, 115)
 
     # --- Drawing ---
     pygame.draw.rect(window, (255, 0, 0), point)
