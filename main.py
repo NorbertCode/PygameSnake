@@ -1,6 +1,17 @@
 import pygame
 import random
 
+def RandomizePosition(areaWidth, areaHeight, cellSize):
+    return pygame.Rect((random.randint(0, areaWidth - 1) * cellSize, random.randint(0, areaHeight - 1) * cellSize, cellSize, cellSize))
+
+def IsInsideSnake(rect, snake):
+    isInsideSnake = False
+    for cell in snake:
+        if rect.colliderect(cell):
+            isInsideSnake = True
+            break
+    return isInsideSnake
+
 CELL_SIZE = 50
 AREA_WIDTH = 15
 AREA_HEIGHT = 15
@@ -13,21 +24,13 @@ snake = [pygame.Rect((2 * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
          pygame.Rect((CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
          pygame.Rect((0, 0, CELL_SIZE, CELL_SIZE))]
 
-point = pygame.Rect((random.randint(0, AREA_WIDTH - 1) * CELL_SIZE, random.randint(0, AREA_HEIGHT - 1) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+point = RandomizePosition(AREA_WIDTH, AREA_HEIGHT, CELL_SIZE)
 
 clock = pygame.time.Clock()
 timePerTick = 300 # milliseconds
 timeSinceTick = 0
 
 gameOver = False
-
-def IsInsideSnake(rect, snake):
-    isInsideSnake = False
-    for cell in snake:
-        if rect.colliderect(cell):
-            isInsideSnake = True
-            break
-    return isInsideSnake
 
 run = True
 while run:
@@ -62,7 +65,7 @@ while run:
 
             # keep randomizing point's position until it's not spawned inside the snake
             while True:
-                point = pygame.Rect((random.randint(0, AREA_WIDTH - 1) * CELL_SIZE, random.randint(0, AREA_HEIGHT - 1) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                point = RandomizePosition(AREA_WIDTH, AREA_HEIGHT, CELL_SIZE)
                 print(point, IsInsideSnake(point, snake))
                 if not IsInsideSnake(point, snake):
                     break
@@ -80,7 +83,7 @@ while run:
         outOfBounds = snake[0].x < 0 or snake[0].x > (AREA_WIDTH - 1) * CELL_SIZE or snake[0].y < 0 or snake[0].y > (AREA_HEIGHT - 1) * CELL_SIZE
         if outOfBounds or IsInsideSnake(snake[0], snake[1:]): # here you have to use snake[1:], because snake[0] obviously collides with itself
             for i in range(len(snake) - 1):
-                snake[i] = pygame.Rect((snake[i + 1].x, snake[i + 1].y, CELL_SIZE, CELL_SIZE))
+                snake[i] = snake[i + 1].copy()
             snake[-1].move_ip(-direction[0] * CELL_SIZE, -direction[1] * CELL_SIZE)
             gameOver = True
 
