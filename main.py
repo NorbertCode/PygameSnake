@@ -113,7 +113,7 @@ while run:
     elif not gameOver:
         timeSinceTick += clock.tick()
 
-    else:
+    else: # on game over
         DrawText('You collected ' + str(pointsCollected) + (' points' if pointsCollected != 1 else ' point'), 30, 15, 15)
         DrawText('Press space to restart', 30, 15, 50)
         DrawText('Press esc to quit', 30, 15, 85)
