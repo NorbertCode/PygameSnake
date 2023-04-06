@@ -16,7 +16,7 @@ snake = [pygame.Rect((2 * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)),
 point = pygame.Rect((random.randint(0, AREA_WIDTH - 1) * CELL_SIZE, random.randint(0, AREA_HEIGHT - 1) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
 clock = pygame.time.Clock()
-timePerTick = 500 # milliseconds, so 0.5 second
+timePerTick = 300 # milliseconds
 timeSinceTick = 0
 
 gameOver = False
@@ -48,8 +48,6 @@ while run:
                 toBeDirection = (-1, 0)
             elif pressed[pygame.K_RIGHT]:
                 toBeDirection = (1, 0)
-            elif pressed[pygame.K_SPACE]:
-                pause = not pause
 
             # check if going that direction means going backwards
             toBePosition = (snake[0].x + (toBeDirection[0] * CELL_SIZE), snake[0].y + (toBeDirection[1] * CELL_SIZE))
@@ -64,7 +62,8 @@ while run:
 
             # keep randomizing point's position until it's not spawned inside the snake
             while True:
-                point = pygame.Rect((random.randint(0, AREA_WIDTH) * CELL_SIZE, random.randint(0, AREA_HEIGHT) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                point = pygame.Rect((random.randint(0, AREA_WIDTH - 1) * CELL_SIZE, random.randint(0, AREA_HEIGHT - 1) * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                print(point, IsInsideSnake(point, snake))
                 if not IsInsideSnake(point, snake):
                     break
 
@@ -91,8 +90,9 @@ while run:
 
     # --- Drawing ---
     pygame.draw.rect(window, (255, 0, 0), point)
-    for cell in snake:
+    for cell in snake[1:]:
         pygame.draw.rect(window, (0, 255, 0), cell)
+    pygame.draw.rect(window, (0, 224, 0), snake[0])
 
     pygame.display.update()
 
