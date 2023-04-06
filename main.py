@@ -87,7 +87,6 @@ while run:
             # keep randomizing point's position until it's not spawned inside the snake
             while True:
                 point = RandomizePosition()
-                print(point, IsInsideSnake(point, snake))
                 if not IsInsideSnake(point, snake):
                     break
 
@@ -115,9 +114,9 @@ while run:
         timeSinceTick += clock.tick()
 
     else:
-        DrawText('You collected ' + str(pointsCollected) + ' points.', 30, 15, 15)
-        DrawText('Press space to restart', 30, 15, 65)
-        DrawText('Press esc to quit', 30, 15, 115)
+        DrawText('You collected ' + str(pointsCollected) + (' points' if pointsCollected != 1 else ' point'), 30, 15, 15)
+        DrawText('Press space to restart', 30, 15, 50)
+        DrawText('Press esc to quit', 30, 15, 85)
 
     # --- Drawing ---
     pygame.draw.rect(window, (255, 0, 0), point)
