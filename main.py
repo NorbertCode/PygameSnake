@@ -43,13 +43,13 @@ while run:
         elif event.type == pygame.KEYDOWN:
             pressed = pygame.key.get_pressed()
             toBeDirection = direction # so if the player presses something other than arrow buttons the snake doesn't just stop
-            if pressed[pygame.K_UP]:
+            if pressed[pygame.K_UP] or pressed[pygame.K_w]:
                 toBeDirection = (0, -1)
-            elif pressed[pygame.K_DOWN]:
+            elif pressed[pygame.K_DOWN]or pressed[pygame.K_s]:
                 toBeDirection = (0, 1)
-            elif pressed[pygame.K_LEFT]:
+            elif pressed[pygame.K_LEFT] or pressed[pygame.K_a]:
                 toBeDirection = (-1, 0)
-            elif pressed[pygame.K_RIGHT]:
+            elif pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
                 toBeDirection = (1, 0)
 
             # check if going that direction means going backwards
