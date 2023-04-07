@@ -43,6 +43,16 @@ timeSinceTick = 0
 
 gameOver = False
 
+background = pygame.Surface(window.get_size())
+bgWidth, bgHeight = background.get_size()
+color1 = (48, 48, 48)
+color2 = (32, 32, 32)
+for x in range((bgWidth + CELL_SIZE - 1) // CELL_SIZE):
+    for y in range((bgHeight + CELL_SIZE - 1) // CELL_SIZE):
+        tileColor = color1 if (x+y) % 2 == 0 else color2
+        tileRect = (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        pygame.draw.rect(background, tileColor, tileRect)
+
 run = True
 while run:
     window.fill((0, 0, 0))
@@ -111,18 +121,19 @@ while run:
         timeSinceTick = 0
 
     elif not gameOver:
-        timeSinceTick += clock.tick()
-
-    else: # on game over
-        DrawText('You collected ' + str(pointsCollected) + (' points' if pointsCollected != 1 else ' point'), 30, 15, 15)
-        DrawText('Press space to restart', 30, 15, 50)
-        DrawText('Press esc to quit', 30, 15, 85)
+        timeSinceTick += clock.tick()  
 
     # --- Drawing ---
+    window.blit(background, (0, 0))
     pygame.draw.rect(window, (255, 0, 0), point)
     for cell in snake[1:]:
         pygame.draw.rect(window, (0, 255, 0), cell)
     pygame.draw.rect(window, (0, 224, 0), snake[0])
+
+    if gameOver:
+        DrawText('You collected ' + str(pointsCollected) + (' points' if pointsCollected != 1 else ' point'), 30, 15, 15)
+        DrawText('Press space to restart', 30, 15, 50)
+        DrawText('Press esc to quit', 30, 15, 85)
 
     pygame.display.update()
 
