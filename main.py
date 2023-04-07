@@ -113,9 +113,12 @@ while run:
 
         outOfBounds = snake[0].x < 0 or snake[0].x > (AREA_WIDTH - 1) * CELL_SIZE or snake[0].y < 0 or snake[0].y > (AREA_HEIGHT - 1) * CELL_SIZE
         if outOfBounds or IsInsideSnake(snake[0], snake[1:]): # here you have to use snake[1:], because snake[0] obviously collides with itself
+            lastCellsDifference = (-(snake[-2].x - snake[-1].x), -(snake[-2].y - snake[-1].y)) # get this before moving cells back
+            # it's used as a means to know where to move the last cell, because using inverted direction variable looked bad when the player failed while in an L shape
+            
             for i in range(len(snake) - 1):
                 snake[i] = snake[i + 1].copy()
-            snake[-1].move_ip(-direction[0] * CELL_SIZE, -direction[1] * CELL_SIZE)
+            snake[-1].move_ip(lastCellsDifference)
             gameOver = True
 
         timeSinceTick = 0
